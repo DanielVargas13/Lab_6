@@ -1,7 +1,7 @@
 import requests
 import time
 
-headers = {"Authorization": "token 6b0412378168db859978b5dfd9948154bb7a4675"}
+headers = {"Authorization": "token ######"}
 
 initial = "null"
 
