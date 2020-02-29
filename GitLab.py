@@ -4,6 +4,7 @@ import time
 headers = {"Authorization": "token ######"}
 
 initial = "null"
+results = [] #vetor de resultados
 
 def run_query(query):
     request = requests.post('https://api.github.com/graphql', json={'query': query}, headers=headers)
@@ -15,7 +16,7 @@ def run_query(query):
     else:
         raise Exception("Query falhou! Codigo de retorno: {}. {}".format(request.status_code, query))
 
-for x in range(5):        
+for x in range(50):        
       query = """
       {
         search(query:"stars:>100", type:REPOSITORY, first:20, after:%s){
@@ -57,5 +58,8 @@ for x in range(5):
       """ % (initial)
 
       result = run_query(query)
-      print(result)
+      for y in range(20):
+        results.append(result["data"]["search"]["nodes"][y])
       initial = '"{}"'.format(result["data"]["search"]["pageInfo"]["endCursor"])
+
+print(results)
