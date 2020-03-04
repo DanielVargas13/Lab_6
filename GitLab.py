@@ -1,5 +1,6 @@
 import requests
 import time
+import csv
 
 headers = {"Authorization": "token ######"}
 
@@ -15,6 +16,36 @@ def run_query(query):
         return request.json()
     else:
         raise Exception("Query falhou! Codigo de retorno: {}. {}".format(request.status_code, query))
+
+def createCsv(nodes):
+  with open("/Lab_6/Repositorios.csv", 'w', newline='') as n_file:
+
+    fnames = [
+        'Nome/Dono;',
+        'URL;',
+        'Linguagem Primária;',
+        'Pull Requests Aceitas;',
+        'Releases;',
+        'Issues Fechadas;',
+        'Total de Issues;',
+        'Data de Criação;',
+        'Última Atualização;']
+
+    csv_writer = csv.DictWriter(n_file, fieldnames=fnames, dialect="excel-tab")
+    csv_writer.writeheader()
+    for node in nodes:
+        csv_writer.writerow(
+            {
+                'Nome/Dono;': "{};".format(node['nameWithOwner']),
+                'URL;': "{};".format(node['url']),
+                'Linguagem Primária;': "{};".format(node['primaryLanguage']['name'] if node['primaryLanguage']!= None else 'null'),
+                'Pull Requests Aceitas;': "{};".format(node['acceptedPullRequests']['totalCount']),
+                'Releases;': "{};".format(node['releases']['totalCount']),
+                'Issues Fechadas;': "{};".format(node['closedIssues']['totalCount']),
+                'Total de Issues;': "{};".format(node['totalIssues']['totalCount']),
+                'Data de Criação;': "{};".format(node['createdAt']),
+                'Última Atualização;': "{};".format(node['updatedAt'])
+            })
 
 for x in range(50):        
       query = """
@@ -62,4 +93,6 @@ for x in range(50):
         results.append(result["data"]["search"]["nodes"][y])
       initial = '"{}"'.format(result["data"]["search"]["pageInfo"]["endCursor"])
 
-print(results)
+print('Dados obtidos com sucesso')
+createCsv(results)
+print('Csv gerado com sucesso')
